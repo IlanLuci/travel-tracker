@@ -1,0 +1,143 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Travel</title>
+    </head>
+
+    <body>
+
+        <div id="chartdiv"></div>
+
+        <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+        <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+        <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+        <script src="https://cdn.amcharts.com/lib/5/geodata/usaLow.js"></script>
+        <script src="https://cdn.amcharts.com/lib/5/geodata/canadaLow.js"></script>
+        <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+        <script>
+            let countriesVisited = ["US", "CA", "LI", "HR", "SI", "IT", "FR", "DE", "ES", "CH", "NL", "IL", "KY", "AT", "IS"];
+            let statesVisited = ["ME", "AZ", "MD", "MO", "VA", "WA", "ND", "MT", "CO", "WY", "SD", "IL", "CA", "LA", "VT", "PA", "NB", "CT", "FL", "MA", "NH", "NJ", "NY"];
+            let provincesVisited = ["ON", "QC"];
+
+            am5.ready(() => {
+                let root = am5.Root.new("chartdiv");
+
+                root.setThemes([am5themes_Animated.new(root)]);
+
+                // Create the map chart
+                // https://www.amcharts.com/docs/v5/charts/map-chart/
+                var chart = root.container.children.push(am5map.MapChart.new(root, {
+                    panX: "translateX",
+                    panY: "translateY",
+                    projection: am5map.geoMercator()
+                }));
+
+
+                // Create main polygon series for countries
+                // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+                var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+                    geoJSON: am5geodata_worldLow,
+                    exclude: ["AQ"]
+                }));
+
+                polygonSeries.mapPolygons.template.setAll({
+                    tooltipText: "{name}",
+                    toggleKey: "active",
+                    interactive: true,
+                    templateField: "polygonSettings" // bind settings
+                });
+
+                polygonSeries.mapPolygons.template.states.create("hover", {
+                    fill: root.interfaceColors.get("primaryButtonHover")
+                });
+
+                polygonSeries.mapPolygons.template.states.create("active", {
+                    fill: root.interfaceColors.get("primaryButtonHover")
+                });
+
+                let countriesBeen = [];
+                countriesVisited.forEach(code => {
+                    countriesBeen.push({
+                        id: code,
+                        polygonSettings: { fill: am5.color(0x3eb06b) } // green
+                    });
+                });
+                polygonSeries.data.setAll(countriesBeen);
+
+                // ------------------ 🇺🇸 USA STATES ------------------ //
+                var polygonSeriesUS = chart.series.push(am5map.MapPolygonSeries.new(root, {
+                    geoJSON: am5geodata_usaLow
+                }));
+
+                polygonSeriesUS.mapPolygons.template.setAll({
+                    tooltipText: "{name}",
+                    toggleKey: "active",
+                    interactive: true,
+                    templateField: "polygonSettings" // bind settings
+                });
+
+                polygonSeriesUS.mapPolygons.template.states.create("hover", {
+                    fill: root.interfaceColors.get("primaryButtonHover")
+                });
+
+                polygonSeriesUS.mapPolygons.template.states.create("active", {
+                    fill: root.interfaceColors.get("primaryButtonHover")
+                });
+
+                let statesBeen = [];
+                statesVisited.forEach(code => {
+                    statesBeen.push({
+                        id: "US-" + code,
+                        polygonSettings: { fill: am5.color(0x3eb06b) } // green
+                    });
+                });
+                polygonSeriesUS.data.setAll(statesBeen);
+
+                // ------------------ 🇨🇦 CANADA PROVINCES ------------------ //
+                var polygonSeriesCA = chart.series.push(
+                    am5map.MapPolygonSeries.new(root, {
+                        geoJSON: am5geodata_canadaLow // this file has the provinces
+                    })
+                );
+
+                polygonSeriesCA.mapPolygons.template.setAll({
+                    tooltipText: "{name}",
+                    interactive: true,
+                    templateField: "polygonSettings"
+                });
+
+                polygonSeriesCA.mapPolygons.template.states.create("hover", {
+                    fill: root.interfaceColors.get("primaryButtonHover")
+                });
+
+                polygonSeriesCA.mapPolygons.template.states.create("active", {
+                    fill: root.interfaceColors.get("primaryButtonHover")
+                });
+
+                let provincesBeen = [];
+                provincesVisited.forEach(code => {
+                    provincesBeen.push({
+                        id: "CA-" + code,
+                        polygonSettings: { fill: am5.color(0x3eb06b) } // green
+                    });
+                });
+                polygonSeriesCA.data.setAll(provincesBeen);
+
+
+                // Add zoom control
+                var zoomControl = chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
+                zoomControl.homeButton.set("visible", true);
+
+                // Set clicking on "water" to zoom out
+                chart.chartContainer.get("background").events.on("click", function () {
+                    chart.goHome();
+                })
+
+
+                // Make stuff animate on load
+                chart.appear(1000, 100);
+            });
+        </script>
+    </body>
+</html>
