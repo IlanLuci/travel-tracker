@@ -2,11 +2,58 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
         <title>Travel</title>
+
+        <style>
+            #back {
+                position: absolute;
+                top: 15px;
+                left: 15px;
+                font-size: 14pt;
+                color: #222;
+                border: 2px solid #222;
+                padding: 8px;
+                cursor: pointer;
+            }
+            #back:hover {
+                background-color: cornflowerblue;
+            }
+            #chartdiv {
+                width: 100%;
+                height: calc(100% - 70px);
+                margin-top: 70px;
+            }
+            #stats {
+                position: absolute;
+                top: 15px;
+                left: 70px;
+                font-size: 14pt;
+                color: #222;
+                border: 2px solid #222;
+                padding: 9px;
+                text-align: right;
+            }
+            #stats p {
+                display: inline-block;
+                margin: 0px 10px;
+            }
+        </style>
     </head>
 
     <body>
+        <span id="back" onclick="history.back()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+            </svg>
+        </span>
 
+        <span id="stats">
+            <p id="total-countries"></p>
+            <p id="total-states"></p>
+            <p id="total-provinces"></p>
+        </span>
+        
         <div id="chartdiv"></div>
 
         <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
@@ -16,9 +63,13 @@
         <script src="https://cdn.amcharts.com/lib/5/geodata/canadaLow.js"></script>
         <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
         <script>
-            let countriesVisited = ["US", "CA", "LI", "HR", "SI", "IT", "FR", "DE", "ES", "CH", "NL", "IL", "KY", "AT", "IS"];
+            let countriesVisited = ["US", "CA", "LI", "HR", "SI", "IT", "FR", "DE", "ES", "CH", "NL", "IL", "KY", "AT", "IS", "PR"];
             let statesVisited = ["ME", "AZ", "MD", "MO", "VA", "WA", "ND", "MT", "CO", "WY", "SD", "IL", "CA", "LA", "VT", "PA", "NB", "CT", "FL", "MA", "NH", "NJ", "NY"];
             let provincesVisited = ["ON", "QC"];
+
+            document.getElementById('total-countries').innerHTML = `<b>${countriesVisited.length}</b> Countries/Territories Visited`;
+            document.getElementById('total-states').innerHTML = `<b>${statesVisited.length}</b> US States Visited`;
+            document.getElementById('total-provinces').innerHTML = `<b>${provincesVisited.length}</b> Canadian Provinces Visited`;
 
             am5.ready(() => {
                 let root = am5.Root.new("chartdiv");
