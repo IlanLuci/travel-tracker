@@ -6,6 +6,9 @@
         <title>Travel</title>
 
         <style>
+            body {
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+            }
             #back {
                 position: absolute;
                 top: 15px;
@@ -64,7 +67,7 @@
         <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
         <script>
             let countriesVisited = ["US", "CA", "LI", "HR", "SI", "IT", "FR", "DE", "ES", "CH", "NL", "IL", "KY", "AT", "IS", "PR"];
-            let statesVisited = ["ME", "AZ", "MD", "MO", "VA", "WA", "ND", "MT", "CO", "WY", "SD", "IL", "CA", "LA", "VT", "PA", "NB", "CT", "FL", "MA", "NH", "NJ", "NY"];
+            let statesVisited = ["ME", "AZ", "MD", "MO", "VA", "WA", "ND", "MT", "CO", "WY", "SD", "IL", "CA", "LA", "VT", "PA", "NE", "CT", "FL", "MA", "NH", "NJ", "NY"];
             let provincesVisited = ["ON", "QC"];
 
             document.getElementById('total-countries').innerHTML = `<b>${countriesVisited.length}</b> Countries/Territories Visited`;
