@@ -71,6 +71,10 @@
             let statesVisited = ["ME", "AZ", "MD", "MO", "VA", "WA", "ND", "MT", "CO", "WY", "SD", "IL", "CA", "LA", "VT", "PA", "NE", "CT", "FL", "MA", "NH", "NJ", "NY", "DC"];
             let provincesVisited = ["ON", "QC"];
 
+            let countriesPlanned = ["IE", "DK", "MA", "AD", "CZ"];
+            let statesPlanned = [];
+            let provincesPlanned = [];
+
             document.getElementById('total-countries').innerHTML = `<b>${countriesVisited.length}</b> Countries/Territories Visited`;
             document.getElementById('total-states').innerHTML = `<b>${statesVisited.length - 1}</b> US States Visited`; // subtract 1 for DC
             document.getElementById('total-provinces').innerHTML = `<b>${provincesVisited.length}</b> Canadian Provinces Visited`;
@@ -119,6 +123,14 @@
                     });
                 });
                 polygonSeries.data.setAll(countriesBeen);
+                let countriesPlannedData = [];
+                countriesPlanned.forEach(code => {
+                    countriesPlannedData.push({
+                        id: code,
+                        polygonSettings: { fill: am5.color(0xf7b84b) } // orange
+                    });
+                });
+                polygonSeries.data.pushAll(countriesPlannedData);
 
                 // ------------------ 🇺🇸 USA STATES ------------------ //
                 var polygonSeriesUS = chart.series.push(am5map.MapPolygonSeries.new(root, {
@@ -148,6 +160,14 @@
                     });
                 });
                 polygonSeriesUS.data.setAll(statesBeen);
+                let statesPlannedData = [];
+                statesPlanned.forEach(code => {
+                    statesPlannedData.push({
+                        id: "US-" + code,
+                        polygonSettings: { fill: am5.color(0xf7b84b) } // orange
+                    });
+                });
+                polygonSeriesUS.data.pushAll(statesPlannedData);
 
                 // ------------------ 🇨🇦 CANADA PROVINCES ------------------ //
                 var polygonSeriesCA = chart.series.push(
@@ -178,7 +198,14 @@
                     });
                 });
                 polygonSeriesCA.data.setAll(provincesBeen);
-
+                let provincesPlannedData = [];
+                provincesPlanned.forEach(code => {
+                    provincesPlannedData.push({
+                        id: "CA-" + code,
+                        polygonSettings: { fill: am5.color(0xf7b84b) } // orange
+                    });
+                });
+                polygonSeriesCA.data.pushAll(provincesPlannedData);
 
                 // Add zoom control
                 var zoomControl = chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
