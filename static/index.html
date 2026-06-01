@@ -1,19 +1,34 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+        <meta name="theme-color" content="#f5f5f5">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="format-detection" content="telephone=no">
 
         <title>Travel</title>
 
         <style>
             html, body {
-                height: 100%;
                 margin: 0;
+                height: 100%;
+            }
+            html {
+                -webkit-text-size-adjust: 100%;
             }
             body {
                 font-family: Verdana, Geneva, Tahoma, sans-serif;
                 background-color: whitesmoke;
                 color: #222;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+                min-height: 100dvh;
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+                padding-bottom: env(safe-area-inset-bottom);
+                box-sizing: border-box;
+                -webkit-tap-highlight-color: rgba(100, 149, 237, 0.25);
             }
             a {
                 color: #222;
@@ -24,8 +39,10 @@
                 align-items: center;
                 gap: 15px;
                 padding: 15px;
+                padding-top: calc(15px + env(safe-area-inset-top));
                 box-sizing: border-box;
                 flex-wrap: wrap;
+                flex-shrink: 0;
             }
             #back {
                 font-size: 14pt;
@@ -34,12 +51,15 @@
                 padding: 8px;
                 cursor: pointer;
                 background: whitesmoke;
-                display: inline-flex;
+                display: none;
                 align-items: center;
                 transition: 0.06s;
+                -webkit-appearance: none;
+                appearance: none;
+                border-radius: 0;
             }
-            #back:hover {
-                background-color: cornflowerblue;
+            #back.visible {
+                display: inline-flex;
             }
             #stats {
                 font-size: 14pt;
@@ -66,29 +86,35 @@
                 padding: 8px 16px;
                 cursor: pointer;
                 transition: 0.06s;
+                -webkit-appearance: none;
+                appearance: none;
+                border-radius: 0;
+                touch-action: manipulation;
             }
             .tab.active {
                 background-color: #222;
                 color: whitesmoke;
             }
-            .tab:hover:not(.active) {
-                background-color: cornflowerblue;
-            }
             .view {
                 width: 100%;
-                height: calc(100vh - 80px);
+                flex: 1;
+                min-height: 0;
                 display: none;
                 box-sizing: border-box;
             }
             .view.active {
-                display: block;
+                display: flex;
+                flex-direction: column;
             }
             #chartdiv {
                 width: 100%;
-                height: 100%;
+                flex: 1;
+                min-height: 0;
+                touch-action: pan-x pan-y;
             }
             #places-view, #log-view {
                 overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
                 padding: 10px 30px 40px;
             }
             .places-section {
@@ -125,9 +151,6 @@
                 transition: 0.06s;
                 min-height: 36px;
             }
-            .place-item:hover {
-                background-color: cornflowerblue;
-            }
             .place-item.visited {
                 background-color: #3eb06b;
                 border-color: #2f8a54;
@@ -143,13 +166,6 @@
                 border-color: #aaa;
                 color: #555;
             }
-            .place-item.visited:hover,
-            .place-item.planned:hover,
-            .place-item.unexplored:hover {
-                background-color: cornflowerblue;
-                color: #222;
-                border-color: #222;
-            }
             .place-name {
                 font-weight: bold;
                 white-space: nowrap;
@@ -162,9 +178,6 @@
                 font-size: 10pt;
                 color: inherit;
                 opacity: 0.85;
-            }
-            .place-item:hover .place-meta {
-                opacity: 1;
             }
             .place-badge {
                 font-size: 10pt;
@@ -197,19 +210,36 @@
             .log-form select,
             .log-form input {
                 font-family: inherit;
-                font-size: 12pt;
-                padding: 8px 10px;
+                font-size: 16px;
+                padding: 10px 12px;
                 border: 1px solid #222;
                 background: whitesmoke;
                 color: #222;
                 box-sizing: border-box;
                 width: 100%;
+                min-height: 44px;
                 transition: 0.06s;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+                border-radius: 0;
             }
-            .log-form select:hover,
-            .log-form input:hover {
-                background-color: cornflowerblue;
-                color: #222;
+            .log-form select {
+                background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%23222' d='M6 8 0 0h12z'/></svg>");
+                background-repeat: no-repeat;
+                background-position: right 12px center;
+                background-size: 10px 7px;
+                padding-right: 34px;
+            }
+            .log-form input[type="date"] {
+                min-height: 44px;
+                line-height: normal;
+            }
+            .log-form input[type="date"]::-webkit-date-and-time-value {
+                text-align: left;
+            }
+            .log-form input[type="date"]::-webkit-calendar-picker-indicator {
+                opacity: 0.6;
             }
             .log-form .actions {
                 grid-column: 1 / span 2;
@@ -223,12 +253,14 @@
                 border: 1px solid #222;
                 background: whitesmoke;
                 color: #222;
-                padding: 8px 18px;
+                padding: 10px 18px;
+                min-height: 44px;
                 cursor: pointer;
                 transition: 0.06s;
-            }
-            .log-form button:hover {
-                background-color: cornflowerblue;
+                -webkit-appearance: none;
+                appearance: none;
+                border-radius: 0;
+                touch-action: manipulation;
             }
             #log-status-line {
                 margin-top: 14px;
@@ -252,9 +284,6 @@
                 margin-bottom: 8px;
                 transition: 0.06s;
             }
-            .recent-row:hover {
-                background-color: cornflowerblue;
-            }
             .recent-row .type {
                 text-transform: uppercase;
                 font-size: 10pt;
@@ -272,14 +301,146 @@
                 border: 1px solid #222;
                 background: whitesmoke;
                 color: #222;
-                padding: 6px 10px;
+                padding: 8px 12px;
+                min-height: 36px;
                 cursor: pointer;
                 transition: 0.06s;
+                -webkit-appearance: none;
+                appearance: none;
+                border-radius: 0;
+                touch-action: manipulation;
             }
-            .recent-row button:hover {
+
+            @media (hover: hover) {
+                #back:hover { background-color: cornflowerblue; }
+                .tab:hover:not(.active) { background-color: cornflowerblue; }
+                .place-item:hover { background-color: cornflowerblue; }
+                .place-item.visited:hover,
+                .place-item.planned:hover,
+                .place-item.unexplored:hover {
+                    background-color: cornflowerblue;
+                    color: #222;
+                    border-color: #222;
+                }
+                .place-item:hover .place-meta { opacity: 1; }
+                .log-form select:hover,
+                .log-form input:hover { background-color: cornflowerblue; color: #222; }
+                .log-form button:hover { background-color: cornflowerblue; }
+                .recent-row:hover { background-color: cornflowerblue; }
+                .recent-row button:hover {
+                    background-color: #ed6051;
+                    color: whitesmoke;
+                    border-color: #ed6051;
+                }
+            }
+
+            #back:active,
+            .tab:active:not(.active),
+            .place-item:active,
+            .log-form button:active,
+            .recent-row button:active {
+                background-color: cornflowerblue;
+            }
+            .recent-row button:active {
                 background-color: #ed6051;
                 color: whitesmoke;
                 border-color: #ed6051;
+            }
+
+            @media (max-width: 720px) {
+                #topbar {
+                    gap: 10px;
+                    padding: 12px;
+                    padding-top: calc(12px + env(safe-area-inset-top));
+                }
+                #stats {
+                    flex-basis: 100%;
+                    order: 3;
+                    font-size: 12pt;
+                    padding: 10px 12px;
+                }
+                #stats p {
+                    display: block;
+                    margin: 4px 0;
+                }
+                #tabs {
+                    margin-left: auto;
+                    flex: 1;
+                    justify-content: flex-end;
+                    gap: 6px;
+                    flex-wrap: wrap;
+                }
+                .tab {
+                    font-size: 12pt;
+                    padding: 10px 12px;
+                    min-height: 44px;
+                    flex: 1 1 auto;
+                }
+                #back {
+                    padding: 10px;
+                    min-height: 44px;
+                    min-width: 44px;
+                    justify-content: center;
+                }
+                #back svg {
+                    width: 20px;
+                    height: 20px;
+                }
+                #places-view, #log-view {
+                    padding: 4px 14px 32px;
+                }
+                .places-section h2 { font-size: 16pt; margin: 18px 0 10px; }
+                .places-section h3 { font-size: 12pt; margin: 16px 0 8px; }
+                .place-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                    gap: 8px;
+                }
+                .place-item {
+                    padding: 10px;
+                    min-height: 44px;
+                }
+                #log-view h2 { font-size: 16pt; margin: 12px 0 12px; }
+                #log-view h3 { font-size: 12pt; margin: 24px 0 10px; }
+                .log-form {
+                    grid-template-columns: 1fr;
+                    gap: 6px;
+                    padding: 16px;
+                    max-width: 100%;
+                }
+                .log-form label {
+                    margin-top: 8px;
+                }
+                .log-form label:first-child {
+                    margin-top: 0;
+                }
+                .log-form .actions {
+                    grid-column: 1;
+                    flex-direction: row-reverse;
+                    margin-top: 16px;
+                }
+                .log-form .actions button {
+                    flex: 1;
+                }
+                .recent-row {
+                    grid-template-columns: 1fr auto;
+                    grid-template-areas:
+                        "type    delete"
+                        "name    delete"
+                        "status  delete"
+                        "date    delete";
+                    row-gap: 4px;
+                    column-gap: 12px;
+                    padding: 12px;
+                }
+                .recent-row .type { grid-area: type; }
+                .recent-row > span:nth-child(2) { grid-area: name; font-weight: bold; }
+                .recent-row .status { grid-area: status; }
+                .recent-row > span:nth-child(4) { grid-area: date; color: #555; font-size: 10pt; }
+                .recent-row button {
+                    grid-area: delete;
+                    align-self: center;
+                    justify-self: end;
+                }
             }
         </style>
     </head>
@@ -604,7 +765,18 @@
                 renderPlaceOptions();
             }
 
+            function setupBackButton() {
+                const backEl = document.getElementById('back');
+                const ref = document.referrer || '';
+                const fromExtension = ref.startsWith('chrome-extension://')
+                    || ref.startsWith('moz-extension://')
+                    || ref.startsWith('safari-web-extension://');
+                const hasHistory = window.history.length > 1;
+                if (fromExtension || hasHistory) backEl.classList.add('visible');
+            }
+
             am5.ready(() => {
+                setupBackButton();
                 state.root = am5.Root.new('chartdiv');
                 state.root.setThemes([am5themes_Animated.new(state.root)]);
 
