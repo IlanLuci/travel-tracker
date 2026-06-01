@@ -650,13 +650,26 @@
                         fill: am5.color(0xf5f5f5),
                         fillOpacity: 1,
                         stroke: am5.color(0x222222),
-                        strokeWidth: 1
+                        strokeWidth: 1,
+                        cornerRadiusTL: 0,
+                        cornerRadiusTR: 0,
+                        cornerRadiusBL: 0,
+                        cornerRadiusBR: 0
                     });
                     btn.get('background').states.create('hover', {
                         fill: am5.color(0x6495ed)
                     });
                     btn.get('background').states.create('down', {
                         fill: am5.color(0x6495ed)
+                    });
+                    btn.children.each((child) => {
+                        if (child === btn.get('background')) return;
+                        if (typeof child.setAll === 'function') {
+                            child.setAll({
+                                stroke: am5.color(0x222222),
+                                fill: am5.color(0x222222)
+                            });
+                        }
                     });
                 };
                 [zoomControl.homeButton, zoomControl.plusButton, zoomControl.minusButton].forEach(styleZoomButton);
