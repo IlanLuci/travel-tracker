@@ -6,59 +6,373 @@
         <title>Travel</title>
 
         <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+            }
             body {
                 font-family: Verdana, Geneva, Tahoma, sans-serif;
                 background-color: whitesmoke;
+                color: #222;
+            }
+            a {
+                color: #222;
+                text-decoration: none;
+            }
+            #topbar {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                padding: 15px;
+                box-sizing: border-box;
+                flex-wrap: wrap;
             }
             #back {
-                position: absolute;
-                top: 15px;
-                left: 15px;
                 font-size: 14pt;
                 color: #222;
                 border: 1px solid #222;
                 padding: 8px;
                 cursor: pointer;
+                background: whitesmoke;
+                display: inline-flex;
+                align-items: center;
+                transition: 0.06s;
             }
             #back:hover {
                 background-color: cornflowerblue;
             }
-            #chartdiv {
-                width: 100%;
-                height: calc(100% - 70px);
-                margin-top: 70px;
-            }
             #stats {
-                position: absolute;
-                top: 15px;
-                left: 70px;
                 font-size: 14pt;
                 color: #222;
                 border: 1px solid #222;
                 padding: 9px;
-                text-align: right;
+                transition: 0.06s;
             }
             #stats p {
                 display: inline-block;
-                margin: 0px 10px;
+                margin: 0 10px;
+            }
+            #tabs {
+                margin-left: auto;
+                display: flex;
+                gap: 10px;
+            }
+            .tab {
+                font-family: inherit;
+                font-size: 14pt;
+                color: #222;
+                background: whitesmoke;
+                border: 1px solid #222;
+                padding: 8px 16px;
+                cursor: pointer;
+                transition: 0.06s;
+            }
+            .tab.active {
+                background-color: #222;
+                color: whitesmoke;
+            }
+            .tab:hover:not(.active) {
+                background-color: cornflowerblue;
+            }
+            .view {
+                width: 100%;
+                height: calc(100vh - 80px);
+                display: none;
+                box-sizing: border-box;
+            }
+            .view.active {
+                display: block;
+            }
+            #chartdiv {
+                width: 100%;
+                height: 100%;
+            }
+            #places-view, #log-view {
+                overflow-y: auto;
+                padding: 10px 30px 40px;
+            }
+            .places-section {
+                margin-bottom: 40px;
+            }
+            .places-section h2 {
+                font-size: 18pt;
+                font-weight: normal;
+                margin: 30px 0 16px;
+                color: #222;
+            }
+            .places-section h3 {
+                font-size: 13pt;
+                font-weight: bold;
+                margin: 20px 0 12px;
+                color: #222;
+            }
+            .place-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 12px;
+            }
+            .place-item {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                gap: 4px;
+                padding: 10px;
+                border: 1px solid #222;
+                background: whitesmoke;
+                font-size: 11pt;
+                color: #222;
+                cursor: default;
+                transition: 0.06s;
+                min-height: 36px;
+            }
+            .place-item:hover {
+                background-color: cornflowerblue;
+            }
+            .place-item.visited {
+                background-color: #3eb06b;
+                border-color: #2f8a54;
+                color: whitesmoke;
+            }
+            .place-item.planned {
+                background-color: #f7b84b;
+                border-color: #c98a1c;
+                color: #222;
+            }
+            .place-item.unexplored {
+                background-color: #d9d9d9;
+                border-color: #aaa;
+                color: #555;
+            }
+            .place-item.visited:hover,
+            .place-item.planned:hover,
+            .place-item.unexplored:hover {
+                background-color: cornflowerblue;
+                color: #222;
+                border-color: #222;
+            }
+            .place-name {
+                font-weight: bold;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .place-meta {
+                display: flex;
+                justify-content: space-between;
+                font-size: 10pt;
+                color: inherit;
+                opacity: 0.85;
+            }
+            .place-item:hover .place-meta {
+                opacity: 1;
+            }
+            .place-badge {
+                font-size: 10pt;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            #log-view h2 {
+                font-size: 18pt;
+                font-weight: normal;
+                margin: 20px 0 16px;
+            }
+            #log-view h3 {
+                font-size: 13pt;
+                font-weight: bold;
+                margin: 30px 0 12px;
+            }
+            .log-form {
+                display: grid;
+                grid-template-columns: 120px 1fr;
+                gap: 14px 16px;
+                max-width: 560px;
+                align-items: center;
+                border: 1px solid #222;
+                padding: 24px;
+                background: whitesmoke;
+            }
+            .log-form label {
+                font-size: 12pt;
+            }
+            .log-form select,
+            .log-form input {
+                font-family: inherit;
+                font-size: 12pt;
+                padding: 8px 10px;
+                border: 1px solid #222;
+                background: whitesmoke;
+                color: #222;
+                box-sizing: border-box;
+                width: 100%;
+                transition: 0.06s;
+            }
+            .log-form select:hover,
+            .log-form input:hover {
+                background-color: cornflowerblue;
+                color: #222;
+            }
+            .log-form .actions {
+                grid-column: 1 / span 2;
+                display: flex;
+                gap: 10px;
+                justify-content: flex-end;
+            }
+            .log-form button {
+                font-family: inherit;
+                font-size: 12pt;
+                border: 1px solid #222;
+                background: whitesmoke;
+                color: #222;
+                padding: 8px 18px;
+                cursor: pointer;
+                transition: 0.06s;
+            }
+            .log-form button:hover {
+                background-color: cornflowerblue;
+            }
+            #log-status-line {
+                margin-top: 14px;
+                font-size: 11pt;
+                color: #555;
+                min-height: 18px;
+            }
+            .recent-list {
+                margin-top: 30px;
+                max-width: 800px;
+            }
+            .recent-row {
+                display: grid;
+                grid-template-columns: 100px 1fr 110px 110px 80px;
+                gap: 12px;
+                align-items: center;
+                padding: 10px 12px;
+                border: 1px solid #222;
+                background: whitesmoke;
+                font-size: 11pt;
+                margin-bottom: 8px;
+                transition: 0.06s;
+            }
+            .recent-row:hover {
+                background-color: cornflowerblue;
+            }
+            .recent-row .type {
+                text-transform: uppercase;
+                font-size: 10pt;
+                letter-spacing: 0.05em;
+            }
+            .recent-row .status {
+                text-transform: uppercase;
+                font-size: 10pt;
+                letter-spacing: 0.05em;
+                font-weight: bold;
+            }
+            .recent-row button {
+                font-family: inherit;
+                font-size: 10pt;
+                border: 1px solid #222;
+                background: whitesmoke;
+                color: #222;
+                padding: 6px 10px;
+                cursor: pointer;
+                transition: 0.06s;
+            }
+            .recent-row button:hover {
+                background-color: #ed6051;
+                color: whitesmoke;
+                border-color: #ed6051;
             }
         </style>
     </head>
 
     <body>
-        <span id="back" onclick="history.back()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
-            </svg>
-        </span>
+        <div id="topbar">
+            <span id="back" onclick="history.back()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                </svg>
+            </span>
 
-        <span id="stats">
-            <p id="total-countries"></p>
-            <p id="total-states"></p>
-            <p id="total-provinces"></p>
-        </span>
-        
-        <div id="chartdiv"></div>
+            <span id="stats">
+                <p id="total-countries"></p>
+                <p id="total-states"></p>
+                <p id="total-provinces"></p>
+            </span>
+
+            <div id="tabs">
+                <button class="tab active" data-view="map-view">Map</button>
+                <button class="tab" data-view="places-view">Places</button>
+                <button class="tab" data-view="log-view">Log Visit</button>
+            </div>
+        </div>
+
+        <div id="map-view" class="view active">
+            <div id="chartdiv"></div>
+        </div>
+
+        <div id="places-view" class="view">
+            <div class="places-section" data-type="country">
+                <h2>Countries / Territories</h2>
+                <h3>Visited <span class="count"></span></h3>
+                <div class="place-grid visited-grid"></div>
+                <h3>Planned <span class="count"></span></h3>
+                <div class="place-grid planned-grid"></div>
+                <h3>Unexplored <span class="count"></span></h3>
+                <div class="place-grid unexplored-grid"></div>
+            </div>
+            <div class="places-section" data-type="state">
+                <h2>US States</h2>
+                <h3>Visited <span class="count"></span></h3>
+                <div class="place-grid visited-grid"></div>
+                <h3>Planned <span class="count"></span></h3>
+                <div class="place-grid planned-grid"></div>
+                <h3>Unexplored <span class="count"></span></h3>
+                <div class="place-grid unexplored-grid"></div>
+            </div>
+            <div class="places-section" data-type="province">
+                <h2>Canadian Provinces</h2>
+                <h3>Visited <span class="count"></span></h3>
+                <div class="place-grid visited-grid"></div>
+                <h3>Planned <span class="count"></span></h3>
+                <div class="place-grid planned-grid"></div>
+                <h3>Unexplored <span class="count"></span></h3>
+                <div class="place-grid unexplored-grid"></div>
+            </div>
+        </div>
+
+        <div id="log-view" class="view">
+            <h2>Log a Visit</h2>
+            <form class="log-form" id="log-form">
+                <label for="log-type">Type</label>
+                <select id="log-type" required>
+                    <option value="country">Country / Territory</option>
+                    <option value="state">US State</option>
+                    <option value="province">Canadian Province</option>
+                </select>
+
+                <label for="log-place">Place</label>
+                <select id="log-place" required></select>
+
+                <label for="log-status">Status</label>
+                <select id="log-status-input" required>
+                    <option value="visited">Visited</option>
+                    <option value="planned">Planned</option>
+                </select>
+
+                <label for="log-date">Date</label>
+                <input type="date" id="log-date">
+
+                <div class="actions">
+                    <button type="reset">Reset</button>
+                    <button type="submit" class="primary">Save</button>
+                </div>
+            </form>
+            <div id="log-status-line"></div>
+
+            <div class="recent-list">
+                <h3>All Logged Visits</h3>
+                <div id="recent-rows"></div>
+            </div>
+        </div>
 
         <script src="lib/amcharts5/index.js"></script>
         <script src="lib/amcharts5/map.js"></script>
@@ -67,158 +381,293 @@
         <script src="lib/amcharts5/geodata/canadaLow.js"></script>
         <script src="lib/amcharts5/themes/Animated.js"></script>
         <script>
-            let countriesVisited = ["US", "CA", "LI", "HR", "SI", "IT", "FR", "DE", "ES", "CH", "NL", "IL", "KY", "AT", "IS", "PR"];
-            let statesVisited = ["ME", "AZ", "MD", "MO", "VA", "WA", "ND", "MT", "CO", "WY", "SD", "IL", "CA", "LA", "VT", "PA", "NE", "CT", "FL", "MA", "NH", "NJ", "NY", "DC"];
-            let provincesVisited = ["ON", "QC"];
+            const COLORS = {
+                visited: 0x3eb06b,
+                planned: 0xf7b84b,
+                unexplored: 0xd9d9d9
+            };
 
-            let countriesPlanned = ["IE", "DK", "MA", "AD", "CZ"];
-            let statesPlanned = [];
-            let provincesPlanned = [];
+            const state = {
+                visits: [],
+                root: null,
+                series: { country: null, state: null, province: null }
+            };
 
-            document.getElementById('total-countries').innerHTML = `<b>${countriesVisited.length}</b> Countries/Territories Visited`;
-            document.getElementById('total-states').innerHTML = `<b>${statesVisited.length - 1}</b> US States Visited`; // subtract 1 for DC
-            document.getElementById('total-provinces').innerHTML = `<b>${provincesVisited.length}</b> Canadian Provinces Visited`;
+            function placesForType(type) {
+                if (type === 'country') {
+                    return am5geodata_worldLow.features
+                        .filter(f => f.properties.id !== 'AQ')
+                        .map(f => ({ id: f.properties.id, name: f.properties.name }));
+                }
+                if (type === 'state') {
+                    return am5geodata_usaLow.features.map(f => ({
+                        id: f.properties.id.replace(/^US-/, ''),
+                        name: f.properties.name
+                    }));
+                }
+                if (type === 'province') {
+                    return am5geodata_canadaLow.features.map(f => ({
+                        id: f.properties.id.replace(/^CA-/, ''),
+                        name: f.properties.name
+                    }));
+                }
+                return [];
+            }
+
+            function visitsByType(type) {
+                return state.visits.filter(v => v.type === type);
+            }
+
+            function formatDate(iso) {
+                if (!iso) return '';
+                const d = new Date(iso);
+                return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+            }
+
+            async function fetchVisits() {
+                const res = await fetch('/api/visits');
+                state.visits = await res.json();
+            }
+
+            async function saveVisit(payload) {
+                const res = await fetch('/api/visits', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.error || 'save failed');
+                }
+                return res.json();
+            }
+
+            async function deleteVisit(id) {
+                const res = await fetch('/api/visits/' + id, { method: 'DELETE' });
+                if (!res.ok) throw new Error('delete failed');
+            }
+
+            function renderStats() {
+                const countries = visitsByType('country').filter(v => v.status === 'visited');
+                const states = visitsByType('state').filter(v => v.status === 'visited');
+                const provinces = visitsByType('province').filter(v => v.status === 'visited');
+                const stateCount = states.filter(v => v.code !== 'DC').length;
+                document.getElementById('total-countries').innerHTML = `<b>${countries.length}</b> Countries/Territories Visited`;
+                document.getElementById('total-states').innerHTML = `<b>${stateCount}</b> US States Visited`;
+                document.getElementById('total-provinces').innerHTML = `<b>${provinces.length}</b> Canadian Provinces Visited`;
+            }
+
+            function renderMap() {
+                for (const type of ['country', 'state', 'province']) {
+                    const series = state.series[type];
+                    if (!series) continue;
+                    const prefix = type === 'country' ? '' : (type === 'state' ? 'US-' : 'CA-');
+                    const data = visitsByType(type).map(v => ({
+                        id: prefix + v.code,
+                        polygonSettings: { fill: am5.color(COLORS[v.status]) }
+                    }));
+                    series.data.setAll(data);
+                }
+            }
+
+            function renderPlaces() {
+                for (const type of ['country', 'state', 'province']) {
+                    const section = document.querySelector(`.places-section[data-type="${type}"]`);
+                    const visitedGrid = section.querySelector('.visited-grid');
+                    const plannedGrid = section.querySelector('.planned-grid');
+                    const unexploredGrid = section.querySelector('.unexplored-grid');
+                    const counts = section.querySelectorAll('.count');
+                    visitedGrid.innerHTML = '';
+                    plannedGrid.innerHTML = '';
+                    unexploredGrid.innerHTML = '';
+
+                    const all = placesForType(type);
+                    const byCode = new Map(visitsByType(type).map(v => [v.code, v]));
+                    let visited = 0, planned = 0, unexplored = 0;
+
+                    for (const place of all.sort((a, b) => a.name.localeCompare(b.name))) {
+                        const v = byCode.get(place.id);
+                        const el = document.createElement('div');
+                        el.className = 'place-item';
+                        if (v && v.status === 'visited') {
+                            el.classList.add('visited');
+                            el.innerHTML = `<span class="place-name">${place.name}</span><span class="place-meta"><span class="place-badge">${place.id}</span><span>${formatDate(v.visitedAt)}</span></span>`;
+                            visitedGrid.appendChild(el);
+                            visited++;
+                        } else if (v && v.status === 'planned') {
+                            el.classList.add('planned');
+                            el.innerHTML = `<span class="place-name">${place.name}</span><span class="place-meta"><span class="place-badge">${place.id}</span><span>planned</span></span>`;
+                            plannedGrid.appendChild(el);
+                            planned++;
+                        } else {
+                            el.classList.add('unexplored');
+                            el.innerHTML = `<span class="place-name">${place.name}</span><span class="place-meta"><span class="place-badge">${place.id}</span></span>`;
+                            unexploredGrid.appendChild(el);
+                            unexplored++;
+                        }
+                    }
+                    counts[0].textContent = `(${visited})`;
+                    counts[1].textContent = `(${planned})`;
+                    counts[2].textContent = `(${unexplored})`;
+                }
+            }
+
+            function renderPlaceOptions() {
+                const type = document.getElementById('log-type').value;
+                const select = document.getElementById('log-place');
+                const places = placesForType(type).sort((a, b) => a.name.localeCompare(b.name));
+                select.innerHTML = places
+                    .map(p => `<option value="${p.id}">${p.name} (${p.id})</option>`)
+                    .join('');
+            }
+
+            function renderRecent() {
+                const container = document.getElementById('recent-rows');
+                const sorted = [...state.visits].sort((a, b) => {
+                    const ad = a.visitedAt ? new Date(a.visitedAt).getTime() : 0;
+                    const bd = b.visitedAt ? new Date(b.visitedAt).getTime() : 0;
+                    return bd - ad;
+                });
+                if (!sorted.length) {
+                    container.innerHTML = '<p style="color:#888;">No visits logged yet.</p>';
+                    return;
+                }
+                const nameFor = (type, code) => {
+                    const all = placesForType(type);
+                    const match = all.find(p => p.id === code);
+                    return match ? match.name : code;
+                };
+                container.innerHTML = sorted.map(v => `
+                    <div class="recent-row">
+                        <span class="type">${v.type}</span>
+                        <span>${nameFor(v.type, v.code)} <small style="color:#888">(${v.code})</small></span>
+                        <span class="status ${v.status}">${v.status}</span>
+                        <span>${formatDate(v.visitedAt) || '—'}</span>
+                        <button data-id="${v.id}">Delete</button>
+                    </div>
+                `).join('');
+                container.querySelectorAll('button[data-id]').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = Number(btn.dataset.id);
+                        await deleteVisit(id);
+                        await refreshAll();
+                    });
+                });
+            }
+
+            async function refreshAll() {
+                await fetchVisits();
+                renderStats();
+                renderMap();
+                renderPlaces();
+                renderRecent();
+            }
+
+            function setupTabs() {
+                const tabs = document.querySelectorAll('.tab');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                        document.getElementById(tab.dataset.view).classList.add('active');
+                    });
+                });
+            }
+
+            function setupForm() {
+                document.getElementById('log-type').addEventListener('change', renderPlaceOptions);
+                document.getElementById('log-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const statusEl = document.getElementById('log-status-line');
+                    statusEl.textContent = 'Saving…';
+                    try {
+                        const type = document.getElementById('log-type').value;
+                        const code = document.getElementById('log-place').value;
+                        const status = document.getElementById('log-status-input').value;
+                        const dateVal = document.getElementById('log-date').value;
+                        await saveVisit({
+                            type,
+                            code,
+                            status,
+                            visitedAt: dateVal || null
+                        });
+                        statusEl.textContent = `Saved ${code} as ${status}.`;
+                        await refreshAll();
+                    } catch (err) {
+                        statusEl.textContent = `Error: ${err.message}`;
+                    }
+                });
+                document.getElementById('log-form').addEventListener('reset', () => {
+                    document.getElementById('log-status-line').textContent = '';
+                });
+                renderPlaceOptions();
+            }
 
             am5.ready(() => {
-                let root = am5.Root.new("chartdiv");
+                state.root = am5.Root.new('chartdiv');
+                state.root.setThemes([am5themes_Animated.new(state.root)]);
 
-                root.setThemes([am5themes_Animated.new(root)]);
+                state.root.interfaceColors.set('primaryButton', am5.color(0xf5f5f5));
+                state.root.interfaceColors.set('primaryButtonHover', am5.color(0x6495ed));
+                state.root.interfaceColors.set('primaryButtonDown', am5.color(0x6495ed));
+                state.root.interfaceColors.set('primaryButtonActive', am5.color(0x6495ed));
+                state.root.interfaceColors.set('primaryButtonStroke', am5.color(0x222222));
+                state.root.interfaceColors.set('primaryButtonText', am5.color(0x222222));
 
-                // Create the map chart
-                // https://www.amcharts.com/docs/v5/charts/map-chart/
-                var chart = root.container.children.push(am5map.MapChart.new(root, {
-                    panX: "translateX",
-                    panY: "translateY",
+                const chart = state.root.container.children.push(am5map.MapChart.new(state.root, {
+                    panX: 'translateX',
+                    panY: 'translateY',
                     projection: am5map.geoMercator()
                 }));
 
-
-                // Create main polygon series for countries
-                // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
-                var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
-                    geoJSON: am5geodata_worldLow,
-                    exclude: ["AQ"]
-                }));
-
-                polygonSeries.mapPolygons.template.setAll({
-                    tooltipText: "{name}",
-                    toggleKey: "active",
-                    interactive: true,
-                    templateField: "polygonSettings" // bind settings
-                });
-
-                polygonSeries.mapPolygons.template.states.create("hover", {
-                    fill: root.interfaceColors.get("primaryButtonHover")
-                });
-
-                polygonSeries.mapPolygons.template.states.create("active", {
-                    fill: root.interfaceColors.get("primaryButtonHover")
-                });
-
-                let countriesBeen = [];
-                countriesVisited.forEach(code => {
-                    countriesBeen.push({
-                        id: code,
-                        polygonSettings: { fill: am5.color(0x3eb06b) } // green
+                const buildSeries = (geoJSON, exclude) => {
+                    const series = chart.series.push(am5map.MapPolygonSeries.new(state.root, {
+                        geoJSON,
+                        ...(exclude ? { exclude } : {})
+                    }));
+                    series.mapPolygons.template.setAll({
+                        tooltipText: '{name}',
+                        interactive: true,
+                        templateField: 'polygonSettings',
+                        fill: am5.color(COLORS.unexplored)
                     });
-                });
-                polygonSeries.data.setAll(countriesBeen);
-                let countriesPlannedData = [];
-                countriesPlanned.forEach(code => {
-                    countriesPlannedData.push({
-                        id: code,
-                        polygonSettings: { fill: am5.color(0xf7b84b) } // orange
+                    series.mapPolygons.template.states.create('hover', {
+                        fill: am5.color(0x6495ed)
                     });
-                });
-                polygonSeries.data.pushAll(countriesPlannedData);
+                    return series;
+                };
 
-                // ------------------ 🇺🇸 USA STATES ------------------ //
-                var polygonSeriesUS = chart.series.push(am5map.MapPolygonSeries.new(root, {
-                    geoJSON: am5geodata_usaLow
-                }));
+                state.series.country = buildSeries(am5geodata_worldLow, ['AQ']);
+                state.series.state = buildSeries(am5geodata_usaLow);
+                state.series.province = buildSeries(am5geodata_canadaLow);
 
-                polygonSeriesUS.mapPolygons.template.setAll({
-                    tooltipText: "{name}",
-                    toggleKey: "active",
-                    interactive: true,
-                    templateField: "polygonSettings" // bind settings
-                });
+                const zoomControl = chart.set('zoomControl', am5map.ZoomControl.new(state.root, {}));
+                zoomControl.homeButton.set('visible', true);
 
-                polygonSeriesUS.mapPolygons.template.states.create("hover", {
-                    fill: root.interfaceColors.get("primaryButtonHover")
-                });
-
-                polygonSeriesUS.mapPolygons.template.states.create("active", {
-                    fill: root.interfaceColors.get("primaryButtonHover")
-                });
-
-                let statesBeen = [];
-                statesVisited.forEach(code => {
-                    statesBeen.push({
-                        id: "US-" + code,
-                        polygonSettings: { fill: am5.color(0x3eb06b) } // green
+                const styleZoomButton = (btn) => {
+                    btn.get('background').setAll({
+                        fill: am5.color(0xf5f5f5),
+                        fillOpacity: 1,
+                        stroke: am5.color(0x222222),
+                        strokeWidth: 1
                     });
-                });
-                polygonSeriesUS.data.setAll(statesBeen);
-                let statesPlannedData = [];
-                statesPlanned.forEach(code => {
-                    statesPlannedData.push({
-                        id: "US-" + code,
-                        polygonSettings: { fill: am5.color(0xf7b84b) } // orange
+                    btn.get('background').states.create('hover', {
+                        fill: am5.color(0x6495ed)
                     });
-                });
-                polygonSeriesUS.data.pushAll(statesPlannedData);
-
-                // ------------------ 🇨🇦 CANADA PROVINCES ------------------ //
-                var polygonSeriesCA = chart.series.push(
-                    am5map.MapPolygonSeries.new(root, {
-                        geoJSON: am5geodata_canadaLow // this file has the provinces
-                    })
-                );
-
-                polygonSeriesCA.mapPolygons.template.setAll({
-                    tooltipText: "{name}",
-                    interactive: true,
-                    templateField: "polygonSettings"
-                });
-
-                polygonSeriesCA.mapPolygons.template.states.create("hover", {
-                    fill: root.interfaceColors.get("primaryButtonHover")
-                });
-
-                polygonSeriesCA.mapPolygons.template.states.create("active", {
-                    fill: root.interfaceColors.get("primaryButtonHover")
-                });
-
-                let provincesBeen = [];
-                provincesVisited.forEach(code => {
-                    provincesBeen.push({
-                        id: "CA-" + code,
-                        polygonSettings: { fill: am5.color(0x3eb06b) } // green
+                    btn.get('background').states.create('down', {
+                        fill: am5.color(0x6495ed)
                     });
-                });
-                polygonSeriesCA.data.setAll(provincesBeen);
-                let provincesPlannedData = [];
-                provincesPlanned.forEach(code => {
-                    provincesPlannedData.push({
-                        id: "CA-" + code,
-                        polygonSettings: { fill: am5.color(0xf7b84b) } // orange
-                    });
-                });
-                polygonSeriesCA.data.pushAll(provincesPlannedData);
+                };
+                [zoomControl.homeButton, zoomControl.plusButton, zoomControl.minusButton].forEach(styleZoomButton);
 
-                // Add zoom control
-                var zoomControl = chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
-                zoomControl.homeButton.set("visible", true);
+                chart.chartContainer.get('background').events.on('click', () => chart.goHome());
 
-                // Set clicking on "water" to zoom out
-                chart.chartContainer.get("background").events.on("click", function () {
-                    chart.goHome();
-                })
-
-
-                // Make stuff animate on load
                 chart.appear(1000, 100);
+
+                setupTabs();
+                setupForm();
+                refreshAll();
             });
         </script>
     </body>

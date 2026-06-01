@@ -12,3 +12,14 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+model Visit {
+  id        Int       @id @default(autoincrement())
+  type      String
+  code      String
+  status    String
+  visitedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@unique([type, code])
+}
