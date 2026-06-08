@@ -676,7 +676,12 @@
             function renderPlaceOptions() {
                 const type = document.getElementById('log-type').value;
                 const select = document.getElementById('log-place');
-                const places = placesForType(type).sort((a, b) => a.name.localeCompare(b.name));
+                const visitedCodes = new Set(
+                    visitsByType(type).filter(v => v.status === 'visited').map(v => v.code)
+                );
+                const places = placesForType(type)
+                    .filter(p => !visitedCodes.has(p.id))
+                    .sort((a, b) => a.name.localeCompare(b.name));
                 select.innerHTML = places
                     .map(p => `<option value="${p.id}">${p.name} (${p.id})</option>`)
                     .join('');
@@ -722,6 +727,7 @@
                 renderMap();
                 renderPlaces();
                 renderRecent();
+                renderPlaceOptions();
             }
 
             function setupTabs() {
