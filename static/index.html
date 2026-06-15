@@ -472,7 +472,7 @@
 
         <div id="places-view" class="view">
             <div class="places-section" data-type="country">
-                <h2>Countries / Territories</h2>
+                <h2>Countries</h2>
                 <h3>Visited <span class="count"></span></h3>
                 <div class="place-grid visited-grid"></div>
                 <h3>Planned <span class="count"></span></h3>
@@ -481,7 +481,7 @@
                 <div class="place-grid unexplored-grid"></div>
             </div>
             <div class="places-section" data-type="state">
-                <h2>US States</h2>
+                <h2>US States / Territories</h2>
                 <h3>Visited <span class="count"></span></h3>
                 <div class="place-grid visited-grid"></div>
                 <h3>Planned <span class="count"></span></h3>
@@ -505,8 +505,8 @@
             <form class="log-form" id="log-form">
                 <label for="log-type">Type</label>
                 <select id="log-type" required>
-                    <option value="country">Country / Territory</option>
-                    <option value="state">US State</option>
+                    <option value="country">Country</option>
+                    <option value="state">US State / Territory</option>
                     <option value="province">Canadian Province</option>
                 </select>
 
@@ -557,14 +557,16 @@
             function placesForType(type) {
                 if (type === 'country') {
                     return am5geodata_worldLow.features
-                        .filter(f => f.properties.id !== 'AQ')
+                        .filter(f => f.properties.id !== 'AQ' && f.properties.id !== 'PR')
                         .map(f => ({ id: f.properties.id, name: f.properties.name }));
                 }
                 if (type === 'state') {
-                    return am5geodata_usaLow.features.map(f => ({
+                    const states = am5geodata_usaLow.features.map(f => ({
                         id: f.properties.id.replace(/^US-/, ''),
                         name: f.properties.name
                     }));
+                    states.push({ id: 'PR', name: 'Puerto Rico' });
+                    return states;
                 }
                 if (type === 'province') {
                     return am5geodata_canadaLow.features.map(f => ({
@@ -613,21 +615,28 @@
                 const states = visitsByType('state').filter(v => v.status === 'visited');
                 const provinces = visitsByType('province').filter(v => v.status === 'visited');
                 const stateCount = states.filter(v => v.code !== 'DC').length;
-                document.getElementById('total-countries').innerHTML = `<b>${countries.length}</b> Countries/Territories Visited`;
-                document.getElementById('total-states').innerHTML = `<b>${stateCount}</b> US States Visited`;
+                document.getElementById('total-countries').innerHTML = `<b>${countries.length}</b> Countries Visited`;
+                document.getElementById('total-states').innerHTML = `<b>${stateCount}</b> US States/Territories Visited`;
                 document.getElementById('total-provinces').innerHTML = `<b>${provinces.length}</b> Canadian Provinces Visited`;
             }
 
             function renderMap() {
+                const seriesData = { country: [], state: [], province: [] };
+                const prefixes = { country: '', state: 'US-', province: 'CA-' };
+                for (const type of ['country', 'state', 'province']) {
+                    for (const v of visitsByType(type)) {
+                        // Puerto Rico is a US territory but its polygon lives in the world
+                        // geodata, so render it on the country series.
+                        const target = (type === 'state' && v.code === 'PR') ? 'country' : type;
+                        seriesData[target].push({
+                            id: prefixes[target] + v.code,
+                            polygonSettings: { fill: am5.color(COLORS[v.status]) }
+                        });
+                    }
+                }
                 for (const type of ['country', 'state', 'province']) {
                     const series = state.series[type];
-                    if (!series) continue;
-                    const prefix = type === 'country' ? '' : (type === 'state' ? 'US-' : 'CA-');
-                    const data = visitsByType(type).map(v => ({
-                        id: prefix + v.code,
-                        polygonSettings: { fill: am5.color(COLORS[v.status]) }
-                    }));
-                    series.data.setAll(data);
+                    if (series) series.data.setAll(seriesData[type]);
                 }
             }
 
