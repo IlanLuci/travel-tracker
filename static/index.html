@@ -2,13 +2,20 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-        <meta name="theme-color" content="#f5f5f5">
+        <meta name="theme-color" content="#f1f2ed">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="format-detection" content="telephone=no">
 
         <title>Travel</title>
 
         <style>
+            :root {
+                --bg: rgb(241, 242, 237);
+                --ink: #222;
+                --muted: #888;
+                --hover: oklab(0.233957 -0.0135066 0.00000955164 / 0.03);
+                --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            }
             html, body {
                 margin: 0;
                 height: 100%;
@@ -18,7 +25,7 @@
             }
             body {
                 font-family: Verdana, Geneva, Tahoma, sans-serif;
-                background-color: whitesmoke;
+                background-color: var(--bg);
                 color: #222;
                 display: flex;
                 flex-direction: column;
@@ -28,7 +35,7 @@
                 padding-right: env(safe-area-inset-right);
                 padding-bottom: env(safe-area-inset-bottom);
                 box-sizing: border-box;
-                -webkit-tap-highlight-color: rgba(100, 149, 237, 0.25);
+                -webkit-tap-highlight-color: rgba(34, 34, 34, 0.08);
             }
             a {
                 color: #222;
@@ -50,7 +57,8 @@
                 border: 1px solid #222;
                 padding: 8px;
                 cursor: pointer;
-                background: whitesmoke;
+                background: var(--bg);
+                box-shadow: var(--card-shadow);
                 display: none;
                 align-items: center;
                 transition: 0.06s;
@@ -65,6 +73,8 @@
                 font-size: 14pt;
                 color: #222;
                 border: 1px solid #222;
+                background: var(--bg);
+                box-shadow: var(--card-shadow);
                 padding: 9px;
                 transition: 0.06s;
             }
@@ -81,7 +91,8 @@
                 font-family: inherit;
                 font-size: 14pt;
                 color: #222;
-                background: whitesmoke;
+                background: var(--bg);
+                box-shadow: var(--card-shadow);
                 border: 1px solid #222;
                 padding: 8px 16px;
                 cursor: pointer;
@@ -93,7 +104,7 @@
             }
             .tab.active {
                 background-color: #222;
-                color: whitesmoke;
+                color: var(--bg);
             }
             .view {
                 width: 100%;
@@ -144,7 +155,8 @@
                 gap: 4px;
                 padding: 10px;
                 border: 1px solid #222;
-                background: whitesmoke;
+                background: var(--bg);
+                box-shadow: var(--card-shadow);
                 font-size: 11pt;
                 color: #222;
                 cursor: default;
@@ -202,7 +214,8 @@
                 align-items: center;
                 border: 1px solid #222;
                 padding: 24px;
-                background: whitesmoke;
+                background: var(--bg);
+                box-shadow: var(--card-shadow);
             }
             .log-form label {
                 font-size: 12pt;
@@ -213,7 +226,8 @@
                 font-size: 16px;
                 padding: 10px 12px;
                 border: 1px solid #222;
-                background: whitesmoke;
+                background: var(--bg);
+                box-shadow: var(--card-shadow);
                 color: #222;
                 box-sizing: border-box;
                 width: 100%;
@@ -251,7 +265,8 @@
                 font-family: inherit;
                 font-size: 12pt;
                 border: 1px solid #222;
-                background: whitesmoke;
+                background: var(--bg);
+                box-shadow: var(--card-shadow);
                 color: #222;
                 padding: 10px 18px;
                 min-height: 44px;
@@ -279,7 +294,8 @@
                 align-items: center;
                 padding: 10px 12px;
                 border: 1px solid #222;
-                background: whitesmoke;
+                background: var(--bg);
+                box-shadow: var(--card-shadow);
                 font-size: 11pt;
                 margin-bottom: 8px;
                 transition: 0.06s;
@@ -299,7 +315,8 @@
                 font-family: inherit;
                 font-size: 10pt;
                 border: 1px solid #222;
-                background: whitesmoke;
+                background: var(--bg);
+                box-shadow: var(--card-shadow);
                 color: #222;
                 padding: 8px 12px;
                 min-height: 36px;
@@ -312,21 +329,21 @@
             }
 
             @media (hover: hover) {
-                #back:hover { background-color: cornflowerblue; }
-                .tab:hover:not(.active) { background-color: cornflowerblue; }
-                .place-item:hover { background-color: cornflowerblue; }
-                .place-item.visited:hover,
-                .place-item.planned:hover,
-                .place-item.unexplored:hover {
-                    background-color: cornflowerblue;
-                    color: #222;
-                    border-color: #222;
-                }
-                .place-item:hover .place-meta { opacity: 1; }
+                #back:hover,
+                .tab:hover:not(.active),
                 .log-form select:hover,
-                .log-form input:hover { background-color: cornflowerblue; color: #222; }
-                .log-form button:hover { background-color: cornflowerblue; }
-                .recent-row:hover { background-color: cornflowerblue; }
+                .log-form input:hover,
+                .recent-row:hover {
+                    background-color: var(--hover);
+                }
+                .place-item:hover { filter: brightness(0.96); }
+                .place-item:hover .place-meta { opacity: 1; }
+                .log-form button.primary:hover {
+                    background-color: #3eb06b;
+                    color: whitesmoke;
+                    border-color: #2f8a54;
+                }
+                .log-form button:not(.primary):hover,
                 .recent-row button:hover {
                     background-color: #ed6051;
                     color: whitesmoke;
@@ -336,11 +353,16 @@
 
             #back:active,
             .tab:active:not(.active),
-            .place-item:active,
-            .log-form button:active,
-            .recent-row button:active {
-                background-color: cornflowerblue;
+            .recent-row:active {
+                background-color: var(--hover);
             }
+            .place-item:active { filter: brightness(0.96); }
+            .log-form button.primary:active {
+                background-color: #3eb06b;
+                color: whitesmoke;
+                border-color: #2f8a54;
+            }
+            .log-form button:not(.primary):active,
             .recent-row button:active {
                 background-color: #ed6051;
                 color: whitesmoke;
@@ -795,10 +817,10 @@
                 state.root = am5.Root.new('chartdiv');
                 state.root.setThemes([am5themes_Animated.new(state.root)]);
 
-                state.root.interfaceColors.set('primaryButton', am5.color(0xf5f5f5));
-                state.root.interfaceColors.set('primaryButtonHover', am5.color(0x6495ed));
-                state.root.interfaceColors.set('primaryButtonDown', am5.color(0x6495ed));
-                state.root.interfaceColors.set('primaryButtonActive', am5.color(0x6495ed));
+                state.root.interfaceColors.set('primaryButton', am5.color(0xf1f2ed));
+                state.root.interfaceColors.set('primaryButtonHover', am5.color(0xe6e7e1));
+                state.root.interfaceColors.set('primaryButtonDown', am5.color(0xe6e7e1));
+                state.root.interfaceColors.set('primaryButtonActive', am5.color(0xe6e7e1));
                 state.root.interfaceColors.set('primaryButtonStroke', am5.color(0x222222));
                 state.root.interfaceColors.set('primaryButtonText', am5.color(0x222222));
 
@@ -819,9 +841,6 @@
                         templateField: 'polygonSettings',
                         fill: am5.color(COLORS.unexplored)
                     });
-                    series.mapPolygons.template.states.create('hover', {
-                        fill: am5.color(0x6495ed)
-                    });
                     return series;
                 };
 
@@ -834,7 +853,7 @@
 
                 const styleZoomButton = (btn) => {
                     btn.get('background').setAll({
-                        fill: am5.color(0xf5f5f5),
+                        fill: am5.color(0xf1f2ed),
                         fillOpacity: 1,
                         stroke: am5.color(0x222222),
                         strokeWidth: 1,
@@ -844,10 +863,10 @@
                         cornerRadiusBR: 0
                     });
                     btn.get('background').states.create('hover', {
-                        fill: am5.color(0x6495ed)
+                        fill: am5.color(0xe6e7e1)
                     });
                     btn.get('background').states.create('down', {
-                        fill: am5.color(0x6495ed)
+                        fill: am5.color(0xe6e7e1)
                     });
                     btn.children.each((child) => {
                         if (child === btn.get('background')) return;
